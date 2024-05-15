@@ -6,13 +6,15 @@
 \usage{
 read_nanodrop(
   filepath,
-  max_wv = 850,
-  min_wv = 190,
+  max_wv = "850.0",
+  min_wv = "190.0",
   increments = 0.5,
   junk_rows = 10
 )
 }
 \arguments{
+\item{filepath}{}
+
 \item{max_wv}{max wavelength read by nanodrop}
 
 \item{min_wv}{min wavelength read by nanodrop}
@@ -20,9 +22,13 @@ read_nanodrop(
 \item{increments}{wavelength increments set on machine}
 
 \item{junk_rows}{number of rows of metadata in the Nanodrop output}
-
-\item{data}{dataset to use}
+}
+\value{
+ds
 }
 \description{
 read_nanodrop
+}
+\examples{
+read_nanodrop("C:/Users/beabo/OneDrive/Documents/NAU/R Package Dev/nanodRop/data/UV-Vis 5_14_2024 5_03_11 PM.tsv")
 }
