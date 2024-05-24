@@ -4,7 +4,16 @@
 \alias{parse_waves}
 \title{parse_waves}
 \usage{
-parse_waves(dataset, wv1 = 223, wv2 = 270, wv3 = 542, wv4 = 644)
+parse_waves(
+  dataset,
+  wv1 = 223,
+  wv2 = 270,
+  wv3 = 542,
+  wv4 = 644,
+  formula_int = 0.03467,
+  nm_542_coef = 0.02321,
+  diff_coef = 0.00271
+)
 }
 \arguments{
 \item{dataset}{the dataset being used. must be run through read_nanodrop()}
@@ -16,6 +25,12 @@ parse_waves(dataset, wv1 = 223, wv2 = 270, wv3 = 542, wv4 = 644)
 \item{wv3}{#Second peak of interest}
 
 \item{wv4}{#Second valley to compare second peak to}
+
+\item{formula_int}{y intercept value}
+
+\item{nm_542_coef}{multiplier for if the peak is at 542 or not}
+
+\item{diff_coef}{coefficient for the peak height}
 }
 \value{
 final_long

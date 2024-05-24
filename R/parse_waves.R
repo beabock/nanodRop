@@ -5,6 +5,9 @@
 #' @param wv2 #First valley to compare first peak to
 #' @param wv3 #Second peak of interest
 #' @param wv4 #Second valley to compare second peak to
+#' @param formula_int y intercept value
+#' @param nm_542_coef multiplier for if the peak is at 542 or not
+#' @param diff_coef coefficient for the peak height
 #'
 #' @return final_long
 #' @export
@@ -13,7 +16,7 @@
 #' @import purrr
 #'
 #' @examples test <- parse_waves(dataset = ds)
-parse_waves <- function(dataset, wv1 = 223, wv2 = 270, wv3 = 542, wv4 = 644){
+parse_waves <- function(dataset, wv1 = 223, wv2 = 270, wv3 = 542, wv4 = 644, formula_int = 0.03467, nm_542_coef = 0.02321, diff_coef = 0.00271) {
 
   # Create a list of wavelengths and their corresponding column names
   wave_pairs <- list(c(wv1, wv2), c(wv3, wv4))
@@ -45,7 +48,7 @@ parse_waves <- function(dataset, wv1 = 223, wv2 = 270, wv3 = 542, wv4 = 644){
   final_long <- final_long %>%
     dplyr::mutate(
       nmdiff_542 = ifelse(diff_type == "diff_542_644", 1, 0),
-      ug_dye = 0.03467 + 0.02321 * nmdiff_542 + 0.00271 * diff
+      ug_dye = formula_int + nm_542_coef * nmdiff_542 + diff_coef * diff #Formula, could be swapped out
     )
 
   return(final_long)
