@@ -18,7 +18,7 @@ parse_waves(dataset, wv1 = 223, wv2 = 270, wv3 = 542, wv4 = 644)
 \item{wv4}{#Second valley to compare second peak to}
 }
 \value{
-final_combined
+final_long
 }
 \description{
 parse_waves
