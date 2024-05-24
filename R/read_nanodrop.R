@@ -50,6 +50,7 @@ read_nanodrop <- function(filepath,
     ds$abs <- as.numeric(ds$abs)
 
   }
+  unique(ds$samps)
 
   return(ds)
 
