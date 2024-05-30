@@ -45,31 +45,16 @@ read_nanodrop <- function(filepath, max_wv = "850.0", min_wv = "190.0", error = 
     ds <- rbind(ds, tog)
   }
 
-  # Optimize the process of removing rows and renaming
-  remove_indices <- integer()
-  rename_indices <- integer()
+  rows_with_e <- ds[samps %like% "e$"]
 
-  # Populate remove_indices and rename_indices
-  for (i in 2:nrow(ds)) {
-    if (stringr::str_ends(ds$samps[i], error)) {
-      if (ds$samps[i - 1] == sub(paste0(error, "$"), "", ds$samps[i])) {
-        remove_indices <- c(remove_indices, i - 1)
-        rename_indices <- c(rename_indices, i)
-      }
-    }
-  }
+  # Step 2: Find the corresponding rows without the "e"
+  samps_without_e <- sub("e$", "", rows_with_e$samps)
 
-  # Remove and rename rows only if there are rows to be removed
-  if (length(remove_indices) > 0) {
-    ds <- ds[-remove_indices]
-  }
+  # Step 3: Remove the preceding rows
+  ds <- ds[!(samps %in% samps_without_e)]
 
-  # Rename rows only if there are rows to be renamed
-  if (length(rename_indices) > 0) {
-    ds$samps[rename_indices] <- gsub(paste0(error, "$"), "", ds$samps[rename_indices])
-  }
+  # Step 4: Rename the remaining rows
+  ds[samps %like% "e$", samps := sub("e$", "", samps)]
+
   return(ds)
 }
-
-# Example usage:
-# result <- read_nanodrop("path_to_your_file.tsv")

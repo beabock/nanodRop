@@ -17,7 +17,9 @@
 #'
 #' @examples test <- parse_waves(dataset = ds1)
 # Create a list of wavelengths and their corresponding column names
-parse_waves <- function(dataset, samps_col = "samps", waves_col = "waves", abs_col = "abs", wave_pairs = list(c(223, 270), c(542, 644))) {
+parse_waves <- function(dataset, samps_col = "samps", waves_col = "waves", abs_col = "abs", wave_pairs = list(c(300, 400), c(542, 644))) {
+
+  #270, 223 is weird and seemingly not helpful.
 
   # Create a list of wavelengths and their corresponding column names
   result_list <- list()

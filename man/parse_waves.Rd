@@ -4,7 +4,13 @@
 \alias{parse_waves}
 \title{parse_waves}
 \usage{
-parse_waves(dataset, wv1 = 223, wv2 = 270, wv3 = 542, wv4 = 644)
+parse_waves(
+  dataset,
+  samps_col = "samps",
+  waves_col = "waves",
+  abs_col = "abs",
+  wave_pairs = list(c(270, 223), c(542, 644))
+)
 }
 \arguments{
 \item{dataset}{the dataset being used. must be run through read_nanodrop()}
@@ -24,7 +30,7 @@ parse_waves(dataset, wv1 = 223, wv2 = 270, wv3 = 542, wv4 = 644)
 \item{diff_coef}{coefficient for the peak height}
 }
 \value{
-final_long
+final_combined
 }
 \description{
 parse_waves
