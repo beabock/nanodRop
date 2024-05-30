@@ -2,33 +2,22 @@
 % Please edit documentation in R/read_nanodrop.R
 \name{read_nanodrop}
 \alias{read_nanodrop}
-\title{read_nanodrop}
+\title{Read and Process Nanodrop Data}
 \usage{
-read_nanodrop(
-  filepath,
-  max_wv = "850.0",
-  min_wv = "190.0",
-  increments = 0.5,
-  junk_rows = 10
-)
+read_nanodrop(filepath, max_wv = "850.0", min_wv = "190.0", error = "e")
 }
 \arguments{
-\item{filepath}{}
+\item{filepath}{Path to the input TSV file.}
 
-\item{max_wv}{max wavelength read by nanodrop}
+\item{max_wv}{Maximum wavelength value as a string. Default is "850.0".}
 
-\item{min_wv}{min wavelength read by nanodrop}
+\item{min_wv}{Minimum wavelength value as a string. Default is "190.0".}
 
-\item{increments}{wavelength increments set on machine}
-
-\item{junk_rows}{number of rows of metadata in the Nanodrop output}
+\item{error}{Error character to check in the "samps" column. Default is "e".}
 }
 \value{
-ds
+A data.table with processed data.
 }
 \description{
-read_nanodrop
-}
-\examples{
-read_nanodrop("C:/Users/beabo/OneDrive/Documents/NAU/R Package Dev/nanodRop/data/UV-Vis 5_14_2024 5_03_11 PM.tsv")
+Read and Process Nanodrop Data
 }

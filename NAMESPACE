@@ -2,6 +2,7 @@
 
 export(parse_waves)
 export(read_nanodrop)
+import(data.table)
 import(dplyr)
 import(purrr)
 import(readr)

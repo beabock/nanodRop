@@ -4,16 +4,7 @@
 \alias{parse_waves}
 \title{parse_waves}
 \usage{
-parse_waves(
-  dataset,
-  wv1 = 223,
-  wv2 = 270,
-  wv3 = 542,
-  wv4 = 644,
-  formula_int = 0.03467,
-  nm_542_coef = 0.02321,
-  diff_coef = 0.00271
-)
+parse_waves(dataset, wv1 = 223, wv2 = 270, wv3 = 542, wv4 = 644)
 }
 \arguments{
 \item{dataset}{the dataset being used. must be run through read_nanodrop()}
@@ -39,5 +30,5 @@ final_long
 parse_waves
 }
 \examples{
-test <- parse_waves(dataset = ds)
+test <- parse_waves(dataset = ds1)
 }

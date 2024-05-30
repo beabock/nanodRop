@@ -9,17 +9,17 @@
 #' @param nm_542_coef multiplier for if the peak is at 542 or not
 #' @param diff_coef coefficient for the peak height
 #'
-#' @return final_long
+#' @return final_combined
 #' @export
 #' @import tidyr
 #' @import dplyr
 #' @import purrr
 #'
-#' @examples test <- parse_waves(dataset = ds)
-parse_waves <- function(dataset, wv1 = 223, wv2 = 270, wv3 = 542, wv4 = 644, formula_int = 0.03467, nm_542_coef = 0.02321, diff_coef = 0.00271) {
+#' @examples test <- parse_waves(dataset = ds1)
+# Create a list of wavelengths and their corresponding column names
+parse_waves <- function(dataset, samps_col = "samps", waves_col = "waves", abs_col = "abs", wave_pairs = list(c(223, 270), c(542, 644))) {
 
   # Create a list of wavelengths and their corresponding column names
-  wave_pairs <- list(c(wv1, wv2), c(wv3, wv4))
   result_list <- list()
 
   for (pair in wave_pairs) {
@@ -38,18 +38,7 @@ parse_waves <- function(dataset, wv1 = 223, wv2 = 270, wv3 = 542, wv4 = 644, for
   # Combine the results
   final_combined <- purrr::reduce(result_list, dplyr::full_join, by = "samps")
 
-  final_long <- final_combined %>%
-    tidyr::pivot_longer(
-      cols = starts_with("diff_"),
-      names_to = "diff_type",
-      values_to = "diff"
-    )
 
-  final_long <- final_long %>%
-    dplyr::mutate(
-      nmdiff_542 = ifelse(diff_type == "diff_542_644", 1, 0),
-      ug_dye = formula_int + nm_542_coef * nmdiff_542 + diff_coef * diff #Formula, could be swapped out
-    )
 
-  return(final_long)
+  return(final_combined)
 }
