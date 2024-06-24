@@ -5,7 +5,7 @@
 [![DOI](https://zenodo.org/badge/798477055.svg)](https://zenodo.org/badge/latestdoi/798477055)
 <!-- badges: end -->
 
-The goal of nanodRop is to ...
+nanodRop is a simple package that allows you to import files that are output by NanoDrop One then turn the files into csv files which can be analyzed much easier.
 
 ## Installation
 
@@ -16,12 +16,5 @@ You can install the development version of nanodRop from [GitHub](https://github
 devtools::install_github("beabock/nanodRop")
 ```
 
-## Example
 
-This is a basic example which shows you how to solve a common problem:
-
-``` r
-library(nanodRop)
-## basic example code
-```
 
