@@ -1,0 +1,10 @@
+pandoc: 3.1.3
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles:
+  advanced-analysis: advanced-analysis.html
+  nanodrop-data-import: nanodrop-data-import.html
+last_built: 2025-11-07T23:16Z
+urls:
+  reference: https://beabock.github.io/nanodRop/reference
+  article: https://beabock.github.io/nanodRop/articles
