@@ -1,10 +1,15 @@
 Package: nanodRop
-Title: Read In Spectral Data from NanoDrop One
+Title: Tools for Importing and Processing NanoDrop One Spectral Data
 Version: 0.0.0.9000
 Authors@R: 
     person("Beatrice", "Bock", , "bmb646@nau.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2240-9360"))
-Description: Convert obnoxious files that are output by the NanoDrop One into a useful csv.
+Description: Provides utilities to import, parse, and convert spectral data files
+    exported by the NanoDrop One spectrophotometer into tidy CSV format suitable
+    for downstream analysis in R.
+Keywords: spectrophotometry, NanoDrop, spectral-data, data-import
+URL: https://beabock.github.io/nanodRop/, https://github.com/beabock/nanodRop
+BugReports: https://github.com/beabock/nanodRop/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -15,6 +20,10 @@ Imports:
     readr,
     stringr,
     tidyr
-Depends: 
+Depends:
     R (>= 2.10)
+Suggests:
+    testthat (>= 3.0.0),
+    covr,
+    pkgdown
 LazyData: true

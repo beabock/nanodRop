@@ -1,0 +1,57 @@
+url: https://beabock.github.io/nanodRop/
+template:
+  bootstrap: 5
+  bslib:
+    bg: "#f8f9fa"
+    fg: "#212529"
+    primary: "#007bff"
+    secondary: "#6c757d"
+
+navbar:
+  bg: primary
+  type: dark
+  left:
+    - text: Home
+      href: index.html
+    - text: Reference
+      href: reference/index.html
+    - text: Articles
+      menu:
+        - text: Quick Start
+          href: articles/quick-start.html
+        - text: Spectral Analysis
+          href: articles/spectral-analysis.html
+    - text: News
+      href: news/index.html
+
+homepage:
+  sidebar:
+    structure: [links, license, community, citation, authors, dev]
+  links:
+    - text: Report a bug
+      href: https://github.com/beabock/nanodRop/issues
+    - text: Browse source code
+      href: https://github.com/beabock/nanodRop
+    - text: Install the package
+      href: articles/quick-start.html
+
+reference:
+  - title: Core Functions
+    contents:
+      - read_nanodrop
+      - parse_waves
+  - title: Datasets
+    contents:
+      - ds
+
+articles:
+  - title: Getting Started
+    navbar: Getting Started
+    contents:
+      - quick-start
+      - spectral-analysis
+
+news:
+  releases:
+    - text: Version 0.0.0.9000
+      href: https://github.com/beabock/nanodRop/releases

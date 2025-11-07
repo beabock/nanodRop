@@ -1,11 +1,7 @@
 bibentry(
   bibtype  = "Misc",
-  title    = ,
+  title    = "nanodRop: Tools for Importing and Processing NanoDrop One Spectral Data",
   author   = as.person("Beatrice Bock"),
-  journal  = ,
   year     = "2024",
-  volume   = ,
-  number   = ,
-  pages    = ,
-  doi      = "10.5281/zenodo.12519996""
+  doi      = "10.5281/zenodo.12519996"
 )

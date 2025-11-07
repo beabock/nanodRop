@@ -1,0 +1,8 @@
+pandoc: '0'
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles: {}
+last_built: 2025-11-07T17:47Z
+urls:
+  reference: https://beabock.github.io/nanodRop/reference
+  article: https://beabock.github.io/nanodRop/articles
