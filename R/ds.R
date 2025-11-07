@@ -9,6 +9,9 @@
 #'   \item{abs}{Absorbance values (numeric)}
 #' }
 #' @source Generated data for example purposes
+"ds"
+
+
 #' Example spectral dataset 2
 #'
 #' A dataset containing example spectral data for analysis.
@@ -21,4 +24,3 @@
 #' }
 #' @source Generated data for example purposes
 "ds1"
-"ds"
