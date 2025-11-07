@@ -64,7 +64,7 @@ print(sample_stats)
 
 Create informative plots of spectral data:
 
-```{r plots, fig.alt = c("A line plot showing the absorbance spectra for multiple samples, with wavelength on the x-axis and absorbance on the y-axis. Each sample is represented by a different colored line.", "A heatmap showing absorbance values for each sample across all wavelengths. The x-axis represents wavelength, the y-axis represents samples, and the color of the tile represents the absorbance value.")}
+```{r plots, fig.cap="Visualization of spectral data", fig.alt=c("Line plot of absorbance spectra for multiple samples.", "Heatmap of absorbance values for each sample across wavelengths.")}
 # Spectral overlay plot
 ggplot(data, aes(x = waves, y = abs, color = samps)) +
   geom_line(alpha = 0.7) +
@@ -111,7 +111,7 @@ if(length(incomplete_samples) > 0) {
 
 Combine `nanodRop` with other spectroscopy packages:
 
-```{r integration, fig.alt = "A series of faceted line plots, one for each sample, comparing the original and smoothed absorbance spectra."}
+```{r integration, fig.cap="Comparison of original and smoothed spectra", fig.alt="Faceted line plots comparing original and smoothed absorbance spectra for each sample."}
 # Example with base R plotting
 library(nanodRop)
 

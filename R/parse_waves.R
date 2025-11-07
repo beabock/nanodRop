@@ -1,13 +1,12 @@
 #' parse_waves
 #'
+#' Parse wavelength differences for spectral analysis
+#'
 #' @param dataset the dataset being used. must be run through read_nanodrop()
-#' @param wv1 #First peak of interest
-#' @param wv2 #First valley to compare first peak to
-#' @param wv3 #Second peak of interest
-#' @param wv4 #Second valley to compare second peak to
-#' @param formula_int y intercept value
-#' @param nm_542_coef multiplier for if the peak is at 542 or not
-#' @param diff_coef coefficient for the peak height
+#' @param samps_col Column name for samples (default "samps")
+#' @param waves_col Column name for wavelengths (default "waves")
+#' @param abs_col Column name for absorbance (default "abs")
+#' @param wave_pairs List of wavelength pairs to analyze (default: c(300,400) and c(542,644))
 #'
 #' @return final_combined
 #' @export

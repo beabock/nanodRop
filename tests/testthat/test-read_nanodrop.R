@@ -1,6 +1,6 @@
 test_that("read_nanodrop handles basic functionality", {
   # Use the example data file
-  filepath <- system.file("data", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop")
+  filepath <- system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop")
 
   # Test with default parameters
   result <- read_nanodrop(filepath)
@@ -27,7 +27,7 @@ test_that("read_nanodrop handles basic functionality", {
 })
 
 test_that("read_nanodrop handles custom wavelength ranges", {
-  filepath <- system.file("data", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop")
+  filepath <- system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop")
 
   # Test with custom min and max wavelengths
   result <- read_nanodrop(filepath, min_wv = "200.0", max_wv = "800.0")
@@ -49,7 +49,7 @@ test_that("read_nanodrop handles error checking", {
 test_that("read_nanodrop handles mismatched start and end rows", {
   # This test might be hard to trigger without specific data, but we can test the error message
   # For now, assume the function handles it correctly as per code
-  filepath <- system.file("data", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop")
+  filepath <- system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop")
 
   # Test with parameters that might cause issues (though unlikely with real data)
   # This is more of a placeholder for edge case testing
@@ -85,7 +85,7 @@ test_that("read_nanodrop processes error samples correctly", {
 })
 
 test_that("read_nanodrop validates input types", {
-  filepath <- system.file("data", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop")
+  filepath <- system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop")
 
   # Test with invalid filepath
   expect_error(read_nanodrop("nonexistent_file.tsv"))
@@ -121,7 +121,7 @@ test_that("read_nanodrop handles edge case with single sample", {
 
 test_that("read_nanodrop handles multiple samples", {
   # Use the actual data file which should have multiple samples
-  filepath <- system.file("data", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop")
+  filepath <- system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop")
   result <- read_nanodrop(filepath)
 
   # Check that we have multiple samples

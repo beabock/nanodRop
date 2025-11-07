@@ -9,31 +9,25 @@ parse_waves(
   samps_col = "samps",
   waves_col = "waves",
   abs_col = "abs",
-  wave_pairs = list(c(270, 223), c(542, 644))
+  wave_pairs = list(c(300, 400), c(542, 644))
 )
 }
 \arguments{
 \item{dataset}{the dataset being used. must be run through read_nanodrop()}
 
-\item{wv1}{#First peak of interest}
+\item{samps_col}{Column name for samples (default "samps")}
 
-\item{wv2}{#First valley to compare first peak to}
+\item{waves_col}{Column name for wavelengths (default "waves")}
 
-\item{wv3}{#Second peak of interest}
+\item{abs_col}{Column name for absorbance (default "abs")}
 
-\item{wv4}{#Second valley to compare second peak to}
-
-\item{formula_int}{y intercept value}
-
-\item{nm_542_coef}{multiplier for if the peak is at 542 or not}
-
-\item{diff_coef}{coefficient for the peak height}
+\item{wave_pairs}{List of wavelength pairs to analyze (default: c(300,400) and c(542,644))}
 }
 \value{
 final_combined
 }
 \description{
-parse_waves
+Parse wavelength differences for spectral analysis
 }
 \examples{
 test <- parse_waves(dataset = ds1)
