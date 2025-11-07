@@ -87,7 +87,7 @@ test_that("parse_waves validates input structure", {
   # Test with missing columns
   invalid_ds <- data.frame(wrong_col = 1:10)
 
-  expect_error(parse_waves(invalid_ds), "object 'waves' not found")
+  expect_error(parse_waves(invalid_ds), "Dataset must contain columns specified by samps_col, waves_col, and abs_col")
 
   # Test with NULL dataset
   expect_error(parse_waves(NULL))

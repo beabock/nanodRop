@@ -1,0 +1,120 @@
+---
+title: "Importing and Processing NanoDrop Spectral Data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Importing and Processing NanoDrop Spectral Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(nanodRop)
+```
+
+## Introduction
+
+The `nanodRop` package provides tools for importing and processing spectral data from NanoDrop One spectrophotometers. This vignette demonstrates how to use the main functions to read, parse, and analyze spectral data.
+
+## Reading NanoDrop Data
+
+The primary function for importing data is `read_nanodrop()`. It takes a filepath to a TSV file exported from NanoDrop and processes it into a tidy data format.
+
+```{r read_data}
+# Load the package
+library(nanodRop)
+
+# Read a sample NanoDrop TSV file
+# In this example, we'll use a file included in the package
+filepath <- system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop")
+data <- read_nanodrop(filepath)
+
+# View the first few rows
+head(data)
+```
+
+The function automatically detects the wavelength range (default 190-850 nm) and extracts sample information from the file. It returns a data.table with columns for samples, wavelengths, and absorbance values.
+
+### Parameters
+
+- `filepath`: Path to the input TSV file
+- `max_wv`: Maximum wavelength (default "850.0")
+- `min_wv`: Minimum wavelength (default "190.0")
+- `error`: Error character to check for (default "e")
+
+## Parsing Wavelength Data
+
+Once you have the spectral data loaded, you can use `parse_waves()` to extract specific wavelength pairs and calculate differences. This is useful for analyzing peaks and valleys in the spectra.
+
+```{r parse_waves}
+# Parse specific wavelength pairs
+parsed <- parse_waves(data, wave_pairs = list(c(300, 400), c(542, 644)))
+
+# View the results
+head(parsed)
+```
+
+The function creates columns for the differences between specified wavelength pairs, which can be used for further analysis.
+
+### Parameters
+
+- `dataset`: The data.frame or data.table from `read_nanodrop()`
+- `samps_col`: Column name for samples (default "samps")
+- `waves_col`: Column name for wavelengths (default "waves")
+- `abs_col`: Column name for absorbance (default "abs")
+- `wave_pairs`: List of wavelength pairs to analyze (default: c(300,400) and c(542,644))
+
+## Example Analysis
+
+Here's a complete workflow for analyzing NanoDrop data:
+
+```{r example_analysis}
+# Load and process data
+data <- read_nanodrop(system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop"))
+
+# Parse wavelength differences
+results <- parse_waves(data)
+
+# Basic summary statistics
+summary(results)
+
+# Plot a sample spectrum
+library(ggplot2)
+sample_spectrum <- data[data$samps == unique(data$samps)[1], ]
+ggplot(sample_spectrum, aes(x = waves, y = abs)) +
+  geom_line() +
+  labs(x = "Wavelength (nm)", y = "Absorbance", title = "Sample Spectrum") +
+  theme_minimal()
+```
+
+## Working with Multiple Samples
+
+The package handles multiple samples in a single file automatically:
+
+```{r multiple_samples}
+# Data with multiple samples
+multi_sample_data <- read_nanodrop(system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop"))
+
+# See all unique samples
+unique(multi_sample_data$samps)
+
+# Plot all samples
+ggplot(multi_sample_data, aes(x = waves, y = abs, color = samps, group = samps)) +
+  geom_line() +
+  labs(x = "Wavelength (nm)", y = "Absorbance", title = "Multiple Sample Spectra") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+## Conclusion
+
+This vignette has demonstrated the basic workflow for using `nanodRop`:
+
+1. Import spectral data with `read_nanodrop()`
+2. Extract wavelength differences with `parse_waves()`
+3. Perform analyses and create visualizations
+
+For more advanced usage, check the function documentation and examples in the tests.

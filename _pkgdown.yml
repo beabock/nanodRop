@@ -45,13 +45,7 @@ reference:
       - ds
 
 articles:
-  - title: Getting Started
-    navbar: Getting Started
-    contents:
-      - quick-start
-      - spectral-analysis
-
-news:
-  releases:
-    - text: Version 0.0.0.9000
-      href: https://github.com/beabock/nanodRop/releases
+  - title: Data Import
+    contents: nanodrop-data-import
+  - title: Advanced Analysis
+    contents: advanced-analysis

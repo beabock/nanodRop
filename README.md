@@ -117,6 +117,28 @@ data(ds1)
 results <- parse_waves(ds1)
 ```
 
+### Sample Visualizations
+
+#### Absorbance Spectra
+
+![Absorbance spectrum from ds dataset showing typical UV-Vis absorption pattern](man/figures/absorbance_vs_wavelength_ds.png)
+
+*Figure 1: Typical absorbance spectrum from the `ds` example dataset, showing UV-Vis absorption across wavelengths.*
+
+![Absorbance spectrum from ds1 dataset](man/figures/absorbance_vs_wavelength_ds1.png)
+
+*Figure 2: Absorbance spectrum from the `ds1` example dataset, demonstrating spectral data visualization.*
+
+#### Peak-to-Valley Analysis
+
+![Parsed wave differences from ds dataset showing peak-valley calculations](man/figures/parsed_waves_ds.png)
+
+*Figure 3: Peak-to-valley differences calculated for selected wavelength pairs in the `ds` dataset.*
+
+![Parsed wave differences from ds1 dataset](man/figures/parsed_waves_ds1.png)
+
+*Figure 4: Peak-to-valley analysis results for the `ds1` dataset, highlighting spectral features.*
+
 ## API Reference
 
 ### Core Functions

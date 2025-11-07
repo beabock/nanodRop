@@ -66,12 +66,14 @@ test_that("read_nanodrop processes error samples correctly", {
     "5/14/2024 5:04 PM",
     "Wavelength (nm) 10mm Absorbance",
     "190.0\t0.5",
-    "191.0\t0.6",
+    "195.0\t0.6",
+    "850.0\t0.8",
     "Sample2e",  # Error sample
     "5/14/2024 5:05 PM",
     "Wavelength (nm) 10mm Absorbance",
     "190.0\t0.7",
-    "191.0\t0.8"
+    "195.0\t0.9",
+    "850.0\t1.0"
   )
   writeLines(mock_data, temp_file)
 
