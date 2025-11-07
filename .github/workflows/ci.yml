@@ -36,7 +36,7 @@ jobs:
         run: |
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/rds")
-        shell: bash
+        shell: Rscript {0}
 
       - name: Restore R package cache
         uses: actions/cache@v4
