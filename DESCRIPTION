@@ -8,7 +8,7 @@ Description: Provides utilities to import, parse, and convert spectral data file
     exported by the NanoDrop One spectrophotometer into tidy CSV format suitable
     for downstream analysis in R.
 Keywords: spectrophotometry, NanoDrop, spectral-data, data-import
-URL: https://beabock.github.io/nanodRop/, https://github.com/beabock/nanodRop
+URL: https://beabock.github.io/nanodRop/
 BugReports: https://github.com/beabock/nanodRop/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
