@@ -33,5 +33,4 @@ Suggests:
     ggplot2,
     reshape2
 LazyData: true
-
 VignetteBuilder: knitr

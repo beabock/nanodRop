@@ -5,11 +5,12 @@
 \alias{ds1}
 \title{Example spectral dataset 2}
 \format{
-A data frame with 31704 rows and 3 variables:
+A data frame with 31704 rows and 4 variables:
 \describe{
 \item{samps}{Sample identifiers (character)}
 \item{waves}{Wavelengths (numeric)}
 \item{abs}{Absorbance values (numeric)}
+\item{n}{Sample number (integer)}
 }
 }
 \source{
