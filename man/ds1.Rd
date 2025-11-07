@@ -3,27 +3,27 @@
 \docType{data}
 \name{ds1}
 \alias{ds1}
-\title{My Data}
+\title{Example spectral dataset}
 \format{
 A data frame with 31704 rows and 3 variables:
 \describe{
+\item{samps}{Sample identifiers (character)}
 \item{waves}{Wavelengths (numeric)}
-\item{samps}{Sample identifiers (numeric)}
 \item{abs}{Absorbance values (numeric)}
 }
 
 A data frame with 31704 rows and 3 variables:
 \describe{
+\item{samps}{Sample identifiers (character)}
 \item{waves}{Wavelengths (numeric)}
-\item{samps}{Sample identifiers (numeric)}
 \item{abs}{Absorbance values (numeric)}
 }
 }
 \source{
 Generated data for example purposes
-My Data 2
+Example spectral dataset 2
 
-A dataset containing example data for analysis.
+A dataset containing example spectral data for analysis.
 
 Generated data for example purposes
 }
@@ -31,6 +31,6 @@ Generated data for example purposes
 ds1
 }
 \description{
-A dataset containing example data for analysis.
+A dataset containing example spectral data for analysis.
 }
 \keyword{datasets}
