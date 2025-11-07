@@ -28,5 +28,10 @@ Suggests:
     covr,
     pkgdown,
     knitr,
-    rmarkdown
+    rmarkdown,
+    ggplot2,
+    reshape2,
+    dplyr,
+    purrr,
+    stringr
 LazyData: true
