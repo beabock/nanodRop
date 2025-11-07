@@ -32,32 +32,12 @@ jobs:
       - name: Setup pandoc
         uses: r-lib/actions/setup-pandoc@v2
 
-      - name: Query dependencies
-        run: |
-          install.packages('remotes')
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/rds")
-        shell: Rscript {0}
-
-      - name: Restore R package cache
-        uses: actions/cache@v4
+      - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          path: ${{ env.R_LIBS_USER }}/*
-          key: ${{ runner.os }}-${{ matrix.config.r }}-1-${{ hashFiles('.github/rds') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.config.r }}-1-
-
-      - name: Install system dependencies
-        if: runner.os == 'Linux'
-        run: |
-          while read -r cmd
-          do
-            eval sudo $cmd
-          done < <(Rscript -e "writeLines(remotes::system_requirements('ubuntu', '20.04'))")
-
-      - name: Install dependencies
-        run: |
-          remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("rcmdcheck")
-        shell: Rscript {0}
+          extra-packages: |
+            any::rcmdcheck
+          needs: |
+            check
 
       - name: Check
         env:
