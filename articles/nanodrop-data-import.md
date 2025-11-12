@@ -20,7 +20,7 @@ library(nanodRop)
 
 # Read a sample NanoDrop TSV file
 # In this example, we'll use a file included in the package
-filepath <- system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop")
+filepath <- system.file("extdata", "nanodrop_example.tsv", package = "nanodRop")
 data <- read_nanodrop(filepath)
 
 # View the first few rows
@@ -89,7 +89,7 @@ Here’s a complete workflow for analyzing NanoDrop data:
 
 ``` r
 # Load and process data
-data <- read_nanodrop(system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop"))
+data <- read_nanodrop(system.file("extdata", "nanodrop_example.tsv", package = "nanodRop"))
 
 # Parse wavelength differences
 results <- parse_waves(data)
@@ -130,7 +130,7 @@ The package handles multiple samples in a single file automatically:
 
 ``` r
 # Data with multiple samples
-multi_sample_data <- read_nanodrop(system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop"))
+multi_sample_data <- read_nanodrop(system.file("extdata", "nanodrop_example.tsv", package = "nanodRop"))
 
 # See all unique samples
 unique(multi_sample_data$samps)

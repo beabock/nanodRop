@@ -14,7 +14,7 @@ function allows you to specify custom wavelength pairs for analysis:
 
 ``` r
 # Load sample data
-data <- read_nanodrop(system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop"))
+data <- read_nanodrop(system.file("extdata", "nanodrop_example.tsv", package = "nanodRop"))
 
 # Analyze multiple wavelength pairs
 custom_pairs <- list(
@@ -182,22 +182,22 @@ Process multiple files in batch:
 # Process multiple files (example with single file)
 batch_results <- list()
 # for(file in file_list) {
-  file <- system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop")
+  file <- system.file("extdata", "nanodrop_example.tsv", package = "nanodRop")
   batch_results[[basename(file)]] <- read_nanodrop(file)
 # }
 
 # Combine results
 combined_data <- bind_rows(batch_results, .id = "file")
 print(table(combined_data$file, combined_data$samps))
-#>                                  
-#>                                   10 1 10 2 11 1 11 2 12 1 12 2 13 1 13 2 14 1
-#>   UV-Vis 5_14_2024 5_03_11 PM.tsv 1321 1321 1321 1321 1321 1321 1321 1321 1321
-#>                                  
-#>                                   14 2 15 1 15 2 15 3 16 1 16 2  6 1  6 2  7 1
-#>   UV-Vis 5_14_2024 5_03_11 PM.tsv 1321 1321 1321 1321 1321 1321 1321 1321 1321
-#>                                  
-#>                                    7 2  8 1  8 2  9 1  9 2  9 3
-#>   UV-Vis 5_14_2024 5_03_11 PM.tsv 1321 1321 1321 1321 1321 1321
+#>                       
+#>                        10 1 10 2 11 1 11 2 12 1 12 2 13 1 13 2 14 1 14 2 15 1
+#>   nanodrop_example.tsv 1321 1321 1321 1321 1321 1321 1321 1321 1321 1321 1321
+#>                       
+#>                        15 2 15 3 16 1 16 2  6 1  6 2  7 1  7 2  8 1  8 2  9 1
+#>   nanodrop_example.tsv 1321 1321 1321 1321 1321 1321 1321 1321 1321 1321 1321
+#>                       
+#>                         9 2  9 3
+#>   nanodrop_example.tsv 1321 1321
 ```
 
 ## Troubleshooting Common Issues
