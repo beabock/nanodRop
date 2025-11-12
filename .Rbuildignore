@@ -1,3 +1,11 @@
 ^nanodRop\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^\.github$
+^docs$
+^_pkgdown\.yml$
+^generate_plots\.R$
+^CODE_OF_CONDUCT\.md$
+^CONTRIBUTING\.md$
+^_ul$
+^\.quarto$

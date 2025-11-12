@@ -1,6 +1,6 @@
 test_that("read_nanodrop handles basic functionality", {
   # Use the example data file
-  filepath <- system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop")
+  filepath <- system.file("extdata", "nanodrop_example.tsv", package = "nanodRop")
 
   # Test with default parameters
   result <- read_nanodrop(filepath)

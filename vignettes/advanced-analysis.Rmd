@@ -29,7 +29,7 @@ The `parse_waves()` function allows you to specify custom wavelength pairs for a
 
 ```{r custom_waves}
 # Load sample data
-data <- read_nanodrop(system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop"))
+data <- read_nanodrop(system.file("extdata", "nanodrop_example.tsv", package = "nanodRop"))
 
 # Analyze multiple wavelength pairs
 custom_pairs <- list(
@@ -140,7 +140,7 @@ Process multiple files in batch:
 # Process multiple files (example with single file)
 batch_results <- list()
 # for(file in file_list) {
-  file <- system.file("extdata", "UV-Vis 5_14_2024 5_03_11 PM.tsv", package = "nanodRop")
+  file <- system.file("extdata", "nanodrop_example.tsv", package = "nanodRop")
   batch_results[[basename(file)]] <- read_nanodrop(file)
 # }
 
