@@ -10,7 +10,7 @@ ds
 
 ## Format
 
-A data frame with 31704 rows and 4 variables:
+A data frame with 31704 rows and 3 variables:
 
 - samps:
 
@@ -23,10 +23,6 @@ A data frame with 31704 rows and 4 variables:
 - abs:
 
   Absorbance values (numeric)
-
-- n:
-
-  Sample number (integer)
 
 ## Source
 
