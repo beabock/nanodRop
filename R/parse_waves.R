@@ -10,10 +10,10 @@
 #'
 #' @return final_combined
 #' @export
-#' @import tidyr
-#' @import dplyr
-#' @import purrr
-#' @import rlang
+#' @importFrom tidyr pivot_wider
+#' @importFrom dplyr mutate filter full_join
+#' @importFrom purrr reduce
+#' @importFrom rlang sym
 #'
 #' @examples test <- parse_waves(dataset = ds1)
 # Create a list of wavelengths and their corresponding column names

@@ -6,8 +6,8 @@
 #' @param error Error character to check in the "samps" column. Default is "e".
 #'
 #' @return A data.table with processed data.
-#' @import data.table
-#' @import stringr
+#' @importFrom data.table fread data.table %like% :=
+#' @importFrom stringr str_split_fixed
 #' @import readr
 #' @export
 read_nanodrop <- function(filepath, max_wv = "850.0", min_wv = "190.0", error = "e") {
