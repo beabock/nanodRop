@@ -7,5 +7,5 @@
 
 ### Advanced Analysis
 
-- [Advanced Spectral Analysis with
-  nanodRop](https://beabock.github.io/nanodRop/articles/advanced-analysis.md):
+- [Advanced Spectral
+  Analysis](https://beabock.github.io/nanodRop/articles/advanced-analysis.md):

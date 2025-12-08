@@ -1,4 +1,4 @@
-# Advanced Spectral Analysis with nanodRop
+# Advanced Spectral Analysis
 
 ## Introduction
 
