@@ -14,6 +14,7 @@
 #' @importFrom dplyr mutate filter full_join
 #' @importFrom purrr reduce
 #' @importFrom rlang sym
+#' @importFrom magrittr "%>%"
 #'
 #' @examples test <- parse_waves(dataset = ds1)
 # Create a list of wavelengths and their corresponding column names

@@ -10,3 +10,5 @@
 ^_ul$
 ^\.quarto$
 ^inst/extdata/\.gitkeep$
+^doc$
+^Meta$

@@ -1,5 +1,5 @@
 ---
-title: "Advanced Spectral Analysis with nanodRop"
+title: "Advanced Spectral Analysis"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Advanced Spectral Analysis}
