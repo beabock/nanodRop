@@ -1,15 +1,20 @@
 # Package index
 
-## Core Functions
+## Reading exports
 
 - [`read_nanodrop()`](https://beabock.github.io/nanodRop/reference/read_nanodrop.md)
-  : Read and Process Nanodrop Data
-- [`parse_waves()`](https://beabock.github.io/nanodRop/reference/parse_waves.md)
-  : parse_waves
+  : Read a NanoDrop One spectral export
+- [`read_nanodrop_dir()`](https://beabock.github.io/nanodRop/reference/read_nanodrop_dir.md)
+  : Read every NanoDrop export in a folder
 
-## Datasets
+## Analysis
+
+- [`parse_waves()`](https://beabock.github.io/nanodRop/reference/parse_waves.md)
+  : Compare absorbance at pairs of wavelengths
+
+## Example data
 
 - [`ds`](https://beabock.github.io/nanodRop/reference/ds.md) : Example
-  spectral dataset
-- [`ds1`](https://beabock.github.io/nanodRop/reference/ds1.md) : Example
-  spectral dataset 2
+  NanoDrop spectra
+- [`ds1`](https://beabock.github.io/nanodRop/reference/ds1.md) : Second
+  example set of NanoDrop spectra

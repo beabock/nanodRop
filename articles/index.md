@@ -1,11 +1,8 @@
 # Articles
 
-### Data Import
+### Guides
 
-- [Importing and Processing NanoDrop Spectral
+- [Importing NanoDrop Spectral
   Data](https://beabock.github.io/nanodRop/articles/nanodrop-data-import.md):
-
-### Advanced Analysis
-
-- [Advanced Spectral
-  Analysis](https://beabock.github.io/nanodRop/articles/advanced-analysis.md):
+- [Analysing NanoDrop
+  Spectra](https://beabock.github.io/nanodRop/articles/advanced-analysis.md):

@@ -1,4 +1,4 @@
 # License
 
     YEAR: 2024
-    COPYRIGHT HOLDER: nanodRop authors
+    COPYRIGHT HOLDER: Beatrice Bock

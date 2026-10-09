@@ -1,6 +1,7 @@
-# Example spectral dataset 2
+# Second example set of NanoDrop spectra
 
-A dataset containing example spectral data for analysis.
+Spectra of 11 samples from a separate NanoDrop session, 1,321
+wavelengths each.
 
 ## Usage
 
@@ -10,24 +11,24 @@ ds1
 
 ## Format
 
-A data frame with 31704 rows and 4 variables:
+A data.table with 14,531 rows and 4 variables:
 
 - samps:
 
-  Sample identifiers (character)
+  Sample name (character).
 
 - waves:
 
-  Wavelengths (numeric)
+  Wavelength in nm (numeric).
 
 - abs:
 
-  Absorbance values (numeric)
+  Absorbance (numeric).
 
 - n:
 
-  Sample number (integer)
+  Session label; `"sn1"` for every row (character).
 
 ## Source
 
-Generated data for example purposes
+NanoDrop One measurements by the package author.
