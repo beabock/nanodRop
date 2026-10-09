@@ -78,9 +78,9 @@ test_that("parse_waves handles missing wavelengths", {
 
   result <- parse_waves(ds_subset)
 
-  # Should still work but with NA values for missing wavelengths
-  expect_s3_class(result, "data.frame")
-  expect_true(all(is.na(result$diff_300_400) | is.numeric(result$diff_300_400)))
+  expect_equal(nrow(result), length(unique(ds$samps)))
+  expect_true(all(is.na(result$diff_300_400)))
+  expect_true(all(is.na(result$diff_542_644)))
 })
 
 test_that("parse_waves validates input structure", {
@@ -133,4 +133,37 @@ test_that("parse_waves handles multiple samples", {
   expect_equal(nrow(result), 2)  # Two samples
   expect_equal(result$diff_300_400, c(0.2, 0.2))
   expect_equal(result$diff_542_644, c(0.2, 0.2))
+})
+
+test_that("parse_waves computes ratios", {
+  test_ds <- data.frame(samps = "s", waves = c(230, 260, 280), abs = c(0.5, 1.8, 1))
+  result <- parse_waves(test_ds, wave_pairs = list(c(260, 280), c(260, 230)), type = "ratio")
+  expect_equal(result$ratio_260_280, 1.8)
+  expect_equal(result$ratio_260_230, 3.6)
+  expect_named(result, c("samps", "abs_260", "abs_280", "abs_230", "ratio_260_280", "ratio_260_230"))
+})
+
+test_that("parse_waves tolerates floating point wavelengths", {
+  test_ds <- data.frame(samps = "s", waves = c(300.0000001, 400), abs = c(1, 0.4))
+  expect_equal(parse_waves(test_ds, wave_pairs = list(c(300, 400)))$diff_300_400, 0.6)
+  expect_true(is.na(parse_waves(test_ds, wave_pairs = list(c(300, 400)), tol = 0)$diff_300_400))
+})
+
+test_that("parse_waves keeps repeated measurements of a sample apart", {
+  spectra <- read_nanodrop(system.file("extdata", "nanodrop_example.tsv", package = "nanodRop"))
+  spectra$samps <- "same name"
+  result <- parse_waves(spectra)
+  expect_equal(nrow(result), 24)
+  expect_equal(result$measurement, 1:24)
+})
+
+test_that("parse_waves handles non-integer wavelengths in names", {
+  test_ds <- data.frame(samps = "s", waves = c(260.5, 280), abs = c(1, 0.5))
+  result <- parse_waves(test_ds, wave_pairs = list(c(260.5, 280)))
+  expect_equal(result$diff_260.5_280, 0.5)
+})
+
+test_that("parse_waves validates wave_pairs", {
+  expect_error(parse_waves(ds, wave_pairs = c(300, 400)), "length-2")
+  expect_error(parse_waves(ds, wave_pairs = list(c(300, 400, 500))), "length-2")
 })

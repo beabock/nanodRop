@@ -2,33 +2,53 @@
 % Please edit documentation in R/parse_waves.R
 \name{parse_waves}
 \alias{parse_waves}
-\title{parse_waves}
+\title{Compare absorbance at pairs of wavelengths}
 \usage{
 parse_waves(
   dataset,
   samps_col = "samps",
   waves_col = "waves",
   abs_col = "abs",
-  wave_pairs = list(c(300, 400), c(542, 644))
+  wave_pairs = list(c(300, 400), c(542, 644)),
+  type = c("diff", "ratio"),
+  tol = 1e-06,
+  id_cols = NULL
 )
 }
 \arguments{
-\item{dataset}{the dataset being used. must be run through read_nanodrop()}
+\item{dataset}{A long data frame of spectra, such as the output of
+\code{\link[=read_nanodrop]{read_nanodrop()}}.}
 
-\item{samps_col}{Column name for samples (default "samps")}
+\item{samps_col, waves_col, abs_col}{Names of the sample, wavelength and
+absorbance columns.}
 
-\item{waves_col}{Column name for wavelengths (default "waves")}
+\item{wave_pairs}{List of length-2 numeric vectors giving the wavelength
+pairs to compare. The defaults (300/400 and 542/644 nm) come from the dye
+work this package was first written for; set your own for other analyses.}
 
-\item{abs_col}{Column name for absorbance (default "abs")}
+\item{type}{\code{"diff"} for \code{A1 - A2} or \code{"ratio"} for \code{A1 / A2}.}
 
-\item{wave_pairs}{List of wavelength pairs to analyze (default: c(300,400) and c(542,644))}
+\item{tol}{Wavelengths within \code{tol} nm of a requested wavelength count as a
+match, which guards against floating point mismatches.}
+
+\item{id_cols}{Columns that identify one spectrum. By default, \code{samps_col}
+plus \code{file} and \code{measurement} when present, so repeated measurements of the
+same sample stay separate.}
 }
 \value{
-final_combined
+A tibble with one row per spectrum: the \code{id_cols}, an
+\verb{<abs_col>_<wavelength>} column for each requested wavelength, and a
+\verb{diff_<w1>_<w2>} or \verb{ratio_<w1>_<w2>} column for each pair. Wavelengths
+missing from a spectrum give \code{NA}.
 }
 \description{
-Parse wavelength differences for spectral analysis
+For each sample measurement, extracts the absorbance at the wavelengths in
+\code{wave_pairs} and computes the difference (\code{A1 - A2}) or ratio (\code{A1 / A2})
+for each pair, e.g. the A260/A280 purity ratio.
 }
 \examples{
-test <- parse_waves(dataset = ds1)
+parse_waves(ds)
+
+# Nucleic acid purity ratios
+parse_waves(ds, wave_pairs = list(c(260, 280), c(260, 230)), type = "ratio")
 }

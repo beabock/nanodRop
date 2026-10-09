@@ -1,8 +1,8 @@
 ---
-title: "Importing and Processing NanoDrop Spectral Data"
+title: "Importing NanoDrop Spectral Data"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Importing and Processing NanoDrop Spectral Data}
+  %\VignetteIndexEntry{Importing NanoDrop Spectral Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -12,109 +12,91 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+```
+
+## The export format
+
+A NanoDrop One UV-Vis export holds one block per measurement: the sample
+name, a timestamp, a `Wavelength (nm)` header, some `//` calibration lines, and
+then wavelength/absorbance pairs:
+
+```
+6 1
+5/14/2024 5:04 PM
+Wavelength (nm)	10mm Absorbance
+//WLCalib: Shift 	0.22333
+...
+//QSpecEnd:
+190.0	10.666
+190.5	10.782
+...
+```
+
+`read_nanodrop()` turns this into a long table with one row per measurement and
+wavelength.
+
+## Reading one file
+
+```{r read}
 library(nanodRop)
+
+path <- system.file("extdata", "nanodrop_example.tsv", package = "nanodRop")
+spectra <- read_nanodrop(path)
+head(spectra)
 ```
 
-## Introduction
+The columns are:
 
-The `nanodRop` package provides tools for importing and processing spectral data from NanoDrop One spectrophotometers. This vignette demonstrates how to use the main functions to read, parse, and analyze spectral data.
+- `samps`: sample name as typed on the instrument
+- `waves`: wavelength (nm)
+- `abs`: absorbance
+- `measurement`: position of the block in the file. If you measure the same
+  sample twice, the two measurements stay separate.
+- `timestamp`: timestamp line as written by the instrument
 
-## Reading NanoDrop Data
+Use `min_wv` and `max_wv` to keep part of the spectrum:
 
-The primary function for importing data is `read_nanodrop()`. It takes a filepath to a TSV file exported from NanoDrop and processes it into a tidy data format.
-
-```{r read_data}
-# Load the package
-library(nanodRop)
-
-# Read a sample NanoDrop TSV file
-# In this example, we'll use a file included in the package
-filepath <- system.file("extdata", "nanodrop_example.tsv", package = "nanodRop")
-data <- read_nanodrop(filepath)
-
-# View the first few rows
-head(data)
+```{r range}
+visible <- read_nanodrop(path, min_wv = 400, max_wv = 700)
+range(visible$waves)
 ```
 
-The function automatically detects the wavelength range (default 190-850 nm) and extracts sample information from the file. It returns a data.table with columns for samples, wavelengths, and absorbance values.
+### Re-measured samples
 
-### Parameters
+Some labs mark a re-measurement by adding a suffix to the sample name, for
+example `"A"` followed later by `"Ae"`. Set `remeasure_suffix` to have the
+re-measurement replace the original:
 
-- `filepath`: Path to the input TSV file
-- `max_wv`: Maximum wavelength (default "850.0")
-- `min_wv`: Minimum wavelength (default "190.0")
-- `error`: Error character to check for (default "e")
-
-## Parsing Wavelength Data
-
-Once you have the spectral data loaded, you can use `parse_waves()` to extract specific wavelength pairs and calculate differences. This is useful for analyzing peaks and valleys in the spectra.
-
-```{r parse_waves}
-# Parse specific wavelength pairs
-parsed <- parse_waves(data, wave_pairs = list(c(300, 400), c(542, 644)))
-
-# View the results
-head(parsed)
+```{r remeasure, eval = FALSE}
+read_nanodrop(path, remeasure_suffix = "e")
 ```
 
-The function creates columns for the differences between specified wavelength pairs, which can be used for further analysis.
+Only names whose original is also in the file are affected. A sample called
+`"Rinse"` stays `"Rinse"` unless there is also a sample called `"Rins"`.
 
-### Parameters
+## Reading a folder of exports
 
-- `dataset`: The data.frame or data.table from `read_nanodrop()`
-- `samps_col`: Column name for samples (default "samps")
-- `waves_col`: Column name for wavelengths (default "waves")
-- `abs_col`: Column name for absorbance (default "abs")
-- `wave_pairs`: List of wavelength pairs to analyze (default: c(300,400) and c(542,644))
+`read_nanodrop_dir()` reads every `.tsv` file in a folder and adds a `file`
+column:
 
-## Example Analysis
+```{r dir}
+folder <- system.file("extdata", package = "nanodRop")
+all_spectra <- read_nanodrop_dir(folder)
+unique(all_spectra$file)
+```
 
-Here's a complete workflow for analyzing NanoDrop data:
+## Plotting
 
-```{r example_analysis, fig.alt = "A line plot showing the absorbance spectrum of a single sample, with wavelength on the x-axis and absorbance on the y-axis."}
-# Load and process data
-data <- read_nanodrop(system.file("extdata", "nanodrop_example.tsv", package = "nanodRop"))
-
-# Parse wavelength differences
-results <- parse_waves(data)
-
-# Basic summary statistics
-summary(results)
-
-# Plot a sample spectrum
+```{r plot, fig.alt = "Absorbance spectra of all samples in the example file, wavelength on the x-axis and absorbance on the y-axis, one coloured line per measurement."}
 library(ggplot2)
-sample_spectrum <- data[data$samps == unique(data$samps)[1], ]
-ggplot(sample_spectrum, aes(x = waves, y = abs)) +
+
+ggplot(spectra, aes(waves, abs, colour = samps, group = measurement)) +
   geom_line() +
-  labs(x = "Wavelength (nm)", y = "Absorbance", title = "Sample Spectrum") +
+  labs(x = "Wavelength (nm)", y = "Absorbance", colour = "Sample") +
   theme_minimal()
 ```
 
-## Working with Multiple Samples
+## Next steps
 
-The package handles multiple samples in a single file automatically:
-
-```{r multiple_samples, fig.alt = "A line plot showing the absorbance spectra of multiple samples, with wavelength on the x-axis and absorbance on the y-axis, and each sample represented by a different colored line."}
-# Data with multiple samples
-multi_sample_data <- read_nanodrop(system.file("extdata", "nanodrop_example.tsv", package = "nanodRop"))
-
-# See all unique samples
-unique(multi_sample_data$samps)
-
-# Plot all samples
-ggplot(multi_sample_data, aes(x = waves, y = abs, color = samps, group = samps)) +
-  geom_line() +
-  labs(x = "Wavelength (nm)", y = "Absorbance", title = "Multiple Sample Spectra") +
-  theme_minimal() +
-  theme(legend.position = "bottom")
-```
-
-## Conclusion
-
-This vignette has demonstrated the basic workflow for using `nanodRop`:
-
-1. Import spectral data with `read_nanodrop()`
-2. Extract wavelength differences with `parse_waves()`
-3. Perform analyses and create visualizations
-
-For more advanced usage, check the function documentation and examples in the tests.
+See `vignette("advanced-analysis")` for computing absorbance ratios and
+differences with `parse_waves()`.

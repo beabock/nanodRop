@@ -1,8 +1,8 @@
 ---
-title: "Advanced Spectral Analysis"
+title: "Analysing NanoDrop Spectra"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Advanced Spectral Analysis}
+  %\VignetteIndexEntry{Analysing NanoDrop Spectra}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -12,179 +12,100 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+```
+
+```{r load, message = FALSE}
 library(nanodRop)
-library(ggplot2)
 library(dplyr)
-library(reshape2)
-library(stringr)
+library(ggplot2)
+
+spectra <- read_nanodrop(system.file("extdata", "nanodrop_example.tsv", package = "nanodRop"))
 ```
 
-## Introduction
+## Absorbance at wavelength pairs
 
-This vignette covers advanced usage of the `nanodRop` package, including custom wavelength analysis, statistical comparisons, and integration with other R packages for spectral analysis.
+`parse_waves()` pulls out the absorbance at chosen wavelengths for each
+measurement and compares them in pairs. With `type = "ratio"` it gives the
+usual nucleic acid purity ratios:
 
-## Custom Wavelength Analysis
-
-The `parse_waves()` function allows you to specify custom wavelength pairs for analysis:
-
-```{r custom_waves}
-# Load sample data
-data <- read_nanodrop(system.file("extdata", "nanodrop_example.tsv", package = "nanodRop"))
-
-# Analyze multiple wavelength pairs
-custom_pairs <- list(
-  c(260, 280),  # DNA/RNA peaks
-  c(300, 400),  # General UV absorption
-  c(542, 644)   # Custom peaks
-)
-
-results <- parse_waves(data, wave_pairs = custom_pairs)
-head(results)
+```{r ratios}
+purity <- parse_waves(spectra, wave_pairs = list(c(260, 280), c(260, 230)), type = "ratio")
+head(purity)
 ```
 
-## Statistical Analysis
+With the default `type = "diff"` it gives differences, which are useful for
+peak heights above a baseline:
 
-Perform statistical comparisons between samples:
+```{r diffs}
+peaks <- parse_waves(spectra, wave_pairs = list(c(300, 400), c(542, 644)))
+head(peaks)
+```
+
+Each measurement is its own row, identified by `measurement` (and `file`, if
+the data came from `read_nanodrop_dir()`), even when sample names repeat. To
+average replicates, group by whatever identifies a sample. In the example file
+names like `"6 1"` and `"6 2"` carry the sample and the replicate number:
+
+```{r average}
+purity %>%
+  mutate(sample = sub(" .*", "", samps)) %>%
+  group_by(sample) %>%
+  summarise(across(starts_with("ratio"), mean), replicates = n())
+```
+
+## Summaries per spectrum
+
+The output of `read_nanodrop()` is a long table, so dplyr summaries work
+directly:
 
 ```{r stats}
-# Calculate summary statistics for each sample
-sample_stats <- data %>%
-  group_by(samps) %>%
+spectra %>%
+  group_by(samps, measurement) %>%
   summarise(
-    mean_abs = mean(abs),
-    max_abs = max(abs),
-    wavelength_max = waves[which.max(abs)],
-    auc = sum(abs)  # Area under curve approximation
-  )
-
-print(sample_stats)
+    peak_wavelength = waves[which.max(abs)],
+    peak_abs = max(abs),
+    .groups = "drop"
+  ) %>%
+  head()
 ```
 
-## Visualization Techniques
-
-Create informative plots of spectral data:
-
-```{r plots, fig.cap="Visualization of spectral data", fig.alt=c("Line plot of absorbance spectra for multiple samples.", "Heatmap of absorbance values for each sample across wavelengths.")}
-# Spectral overlay plot
-ggplot(data, aes(x = waves, y = abs, color = samps)) +
-  geom_line(alpha = 0.7) +
-  labs(x = "Wavelength (nm)", y = "Absorbance") +
-  theme_minimal() +
-  ggtitle("Spectral Comparison")
-
-# Heatmap of absorbance across wavelengths
-wide_data <- dcast(data, samps ~ waves, value.var = "abs")
-melted_data <- melt(wide_data, id.vars = "samps")
-
-ggplot(melted_data, aes(x = as.factor(variable), y = samps, fill = value)) +
-  geom_tile() +
-  scale_fill_viridis_c() +
-  labs(x = "Wavelength (nm)", y = "Sample", fill = "Absorbance") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
-```
-
-## Quality Control
-
-Check data quality and identify potential issues:
+## Quality checks
 
 ```{r qc}
-# Check for negative absorbance values
-negative_abs <- data[data$abs < 0, ]
-if(nrow(negative_abs) > 0) {
-  warning("Negative absorbance values detected")
-  print(negative_abs)
-}
+# Measurements with negative absorbance anywhere in the spectrum
+spectra %>%
+  filter(abs < 0) %>%
+  distinct(samps, measurement)
 
-# Check wavelength range
-wavelength_range <- range(data$waves)
-print(paste("Wavelength range:", wavelength_range[1], "-", wavelength_range[2], "nm"))
-
-# Sample completeness check
-samples_per_wavelength <- table(data$waves)
-incomplete_samples <- names(samples_per_wavelength[samples_per_wavelength != max(samples_per_wavelength)])
-if(length(incomplete_samples) > 0) {
-  warning("Incomplete wavelength data for some samples")
-}
+# Every measurement should cover the same wavelengths
+spectra %>%
+  count(measurement) %>%
+  distinct(n)
 ```
 
-## Integration with Other Packages
+## Smoothing
 
-Combine `nanodRop` with other spectroscopy packages:
+```{r smoothing, fig.alt = "Original and loess-smoothed absorbance spectra for four samples, one panel per sample."}
+smoothed <- spectra %>%
+  filter(measurement <= 4) %>%
+  group_by(measurement) %>%
+  mutate(smoothed = predict(loess(abs ~ waves, span = 0.1))) %>%
+  ungroup()
 
-```{r integration, fig.cap="Comparison of original and smoothed spectra", fig.alt="Faceted line plots comparing original and smoothed absorbance spectra for each sample."}
-# Example with base R plotting
-library(nanodRop)
-
-# Smooth spectra using loess
-smoothed <- data %>%
-  group_by(samps) %>%
-  mutate(smoothed_abs = predict(loess(abs ~ waves, span = 0.1)))
-
-# Plot original vs smoothed
-ggplot(smoothed, aes(x = waves)) +
-  geom_line(aes(y = abs, color = "Original")) +
-  geom_line(aes(y = smoothed_abs, color = "Smoothed")) +
+ggplot(smoothed, aes(waves)) +
+  geom_line(aes(y = abs, colour = "Original")) +
+  geom_line(aes(y = smoothed, colour = "Smoothed")) +
   facet_wrap(~samps) +
-  labs(x = "Wavelength (nm)", y = "Absorbance") +
+  labs(x = "Wavelength (nm)", y = "Absorbance", colour = NULL) +
   theme_minimal()
 ```
 
-## Batch Processing
+## Heatmap
 
-Process multiple files in batch:
-
-```{r batch}
-# List all TSV files in a directory
-# file_list <- list.files(path = "data/", pattern = "*.tsv", full.names = TRUE)
-
-# Process multiple files (example with single file)
-batch_results <- list()
-# for(file in file_list) {
-  file <- system.file("extdata", "nanodrop_example.tsv", package = "nanodRop")
-  batch_results[[basename(file)]] <- read_nanodrop(file)
-# }
-
-# Combine results
-combined_data <- bind_rows(batch_results, .id = "file")
-print(table(combined_data$file, combined_data$samps))
+```{r heatmap, fig.alt = "Heatmap of absorbance for each sample across wavelengths."}
+ggplot(spectra, aes(waves, factor(measurement), fill = abs)) +
+  geom_raster() +
+  scale_fill_viridis_c() +
+  labs(x = "Wavelength (nm)", y = "Measurement", fill = "Absorbance") +
+  theme_minimal()
 ```
-
-## Troubleshooting Common Issues
-
-### Missing Wavelengths
-
-```{r troubleshoot}
-# Check if expected wavelengths are present
-expected_waves <- seq(190, 850, by = 0.5)
-missing_waves <- setdiff(expected_waves, unique(data$waves))
-
-if(length(missing_waves) > 0) {
-  message("Missing wavelengths: ", paste(missing_waves, collapse = ", "))
-} else {
-  message("All expected wavelengths present")
-}
-```
-
-### Sample Naming Issues
-
-```{r sample_names}
-# Clean sample names if needed
-data_clean <- data %>%
-  mutate(samps = str_trim(samps))  # Remove extra whitespace
-
-unique(data_clean$samps)
-```
-
-## Conclusion
-
-This advanced vignette has covered:
-
-- Custom wavelength pair analysis
-- Statistical summaries and comparisons
-- Multiple visualization approaches
-- Quality control procedures
-- Integration with other R packages
-- Batch processing workflows
-- Common troubleshooting scenarios
-
-These techniques should help you get the most out of your NanoDrop spectral data using the `nanodRop` package.

@@ -1,37 +1,30 @@
 Package: nanodRop
-Title: Tools for Importing and Processing NanoDrop One Spectral Data
-Version: 0.1.0
+Title: Import Spectral Data Exported by 'NanoDrop One' Spectrophotometers
+Version: 0.2.0
 Authors@R: 
-    person("Beatrice", "Bock", , "bmb646@nau.edu", role = c("aut", "cre"),
+    person("Beatrice", "Bock", , "bmb646@nau.edu", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0003-2240-9360"))
-Description: Provides utilities to import, parse, and convert spectral data files
-    exported by the NanoDrop One spectrophotometer into tidy CSV format suitable
-    for downstream analysis in R.
-X-CRAN-Keywords: spectrophotometry, NanoDrop, spectral-data, data-import
-URL: https://beabock.github.io/nanodRop/
+Description: Reads the UV-Vis spectral text files exported by 'NanoDrop One'
+    spectrophotometers into tidy long-format tables with one row per sample,
+    measurement and wavelength, keeping repeated measurements and timestamps.
+    Also extracts absorbance differences or ratios at chosen wavelength pairs,
+    such as A260/A280.
+URL: https://beabock.github.io/nanodRop/, https://github.com/beabock/nanodRop
 BugReports: https://github.com/beabock/nanodRop/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
+Depends:
+    R (>= 3.5.0)
 Imports:
     data.table,
-    dplyr,
-    magrittr,
-    purrr,
-    readr,
-    rlang,
-    stringr,
-    tidyr
-Depends:
-    R (>= 2.10)
+    dplyr
 Suggests:
     testthat (>= 3.0.0),
-    covr,
-    pkgdown,
     knitr,
     rmarkdown,
-    ggplot2,
-    reshape2
+    ggplot2
+Config/testthat/edition: 3
 LazyData: true
 VignetteBuilder: knitr

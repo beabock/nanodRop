@@ -3,22 +3,24 @@
 \docType{data}
 \name{ds}
 \alias{ds}
-\title{Example spectral dataset}
+\title{Example NanoDrop spectra}
 \format{
-A data frame with 31704 rows and 3 variables:
+A data frame with 31,704 rows and 3 variables:
 \describe{
-\item{samps}{Sample identifiers (character)}
-\item{waves}{Wavelengths (numeric)}
-\item{abs}{Absorbance values (numeric)}
+\item{samps}{Sample name (character).}
+\item{waves}{Wavelength in nm, 190 to 850 in 0.5 nm steps (numeric).}
+\item{abs}{Absorbance (numeric).}
 }
 }
 \source{
-Generated data for example purposes
+\code{read_nanodrop(system.file("extdata", "nanodrop_example.tsv", package = "nanodRop"))},
+keeping the first three columns.
 }
 \usage{
 ds
 }
 \description{
-A dataset containing example spectral data for analysis.
+The bundled example export (\code{inst/extdata/nanodrop_example.tsv}) as read by
+\code{\link[=read_nanodrop]{read_nanodrop()}}: 24 spectra of 1,321 wavelengths each.
 }
 \keyword{datasets}

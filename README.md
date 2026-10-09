@@ -1,188 +1,87 @@
 # nanodRop
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/beabock/nanodRop/actions/workflows/ci.yml/badge.svg)](https://github.com/beabock/nanodRop/actions/workflows/ci.yml)
 [![DOI](https://zenodo.org/badge/798477055.svg)](https://zenodo.org/badge/latestdoi/798477055)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CRAN status](https://www.r-pkg.org/badges/version/nanodRop)](https://CRAN.R-project.org/package=nanodRop)
-[![R-CMD-check](https://github.com/beabock/nanodRop/actions/workflows/ci.yml/badge.svg)](https://github.com/beabock/nanodRop/actions/workflows/ci.yml)
 <!-- badges: end -->
 
-## Table of Contents
+nanodRop reads the UV-Vis spectral exports from a **NanoDrop One**
+spectrophotometer into R.
 
-- [Overview](#overview)
-- [Features](#features)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Examples](#examples)
-- [API Reference](#api-reference)
-- [Contributing](#contributing)
-- [License](#license)
-- [Citation](#citation)
-
-## Overview
-
-nanodRop is an R package designed to simplify the import and processing of spectral data files exported by the NanoDrop One spectrophotometer. It converts raw TSV files into tidy CSV formats that are ready for downstream analysis in R, making spectral data analysis more accessible and efficient.
-
-The package handles the complexities of NanoDrop file formats, including parsing multiple samples, wavelength ranges, and absorbance measurements, while providing clean, analyzable output.
-
-## Features
-
-- **Easy Import**: Direct import of NanoDrop One TSV files
-- **Data Cleaning**: Automatic handling of error indicators and data validation
-- **Tidy Output**: Converts spectral data to tidy data frames suitable for analysis
-- **Flexible Parsing**: Customizable wavelength ranges and sample processing
-- **Peak Analysis**: Built-in functions for spectral peak and valley calculations
-- **R Integration**: Seamlessly integrates with the tidyverse ecosystem
+The instrument's `.tsv` export stacks every measurement in one file. Each block
+has the sample name, a timestamp and some calibration lines before the actual
+wavelength/absorbance pairs, so it can't be read directly with `read.delim()`.
+`read_nanodrop()` turns the file into a long table with one row per
+measurement and wavelength, ready for dplyr or ggplot2.
 
 ## Installation
 
-### Development Version
-
-You can install the development version of nanodRop from [GitHub](https://github.com/beabock/nanodRop) with:
-
 ```r
-# install.packages("devtools")
-devtools::install_github("beabock/nanodRop")
+# install.packages("remotes")
+remotes::install_github("beabock/nanodRop")
 ```
 
-### CRAN Version (Future Release)
-
-Once available on CRAN:
-
-```r
-install.packages("nanodRop")
-```
-
-### Requirements
-
-- R (>= 2.10)
-- Dependencies: dplyr, purrr, readr, stringr, tidyr
-
-## Quick Start
-
-Load the package and import a NanoDrop file:
+## Usage
 
 ```r
 library(nanodRop)
 
-# Import spectral data
-data <- read_nanodrop("path/to/your/nanodrop_file.tsv")
-
-# View the structure
-head(data)
+spectra <- read_nanodrop("UV-Vis 5_14_2024.tsv")
+head(spectra, 3)
+#>     samps waves    abs measurement         timestamp
+#>    <char> <num>  <num>       <int>            <char>
+#> 1:    6 1 190.0 10.666           1 5/14/2024 5:04 PM
+#> 2:    6 1 190.5 10.782           1 5/14/2024 5:04 PM
+#> 3:    6 1 191.0 10.853           1 5/14/2024 5:04 PM
 ```
 
-## Examples
+Each measurement block in the file gets its own `measurement` number, so
+measuring a sample twice under the same name gives two separate spectra.
 
-### Basic Data Import
+Read a whole folder of exports at once. This adds a `file` column:
 
 ```r
-# Load the package
-library(nanodRop)
-
-# Import data from a NanoDrop TSV file
-spectral_data <- read_nanodrop("UV-Vis_sample.tsv")
-
-# View the first few rows
-head(spectral_data)
-#>   samps waves   abs
-#> 1     1   190 0.123
-#> 2     1   191 0.124
-#> 3     1   192 0.125
-#> ...
+spectra <- read_nanodrop_dir("nanodrop_exports/")
 ```
 
-### Spectral Analysis
+Compare absorbance at wavelength pairs, as differences or ratios:
 
 ```r
-# Parse specific wavelength pairs for peak/valley analysis
-parsed_data <- parse_waves(spectral_data,
-                          wave_pairs = list(c(300, 400), c(542, 644)))
-
-# View the calculated differences
-head(parsed_data)
-#>   samps diff_300_400 diff_542_644
-#> 1     1       0.045        0.123
-#> 2     2       0.052        0.145
-#> ...
+parse_waves(spectra, wave_pairs = list(c(260, 280)), type = "ratio")
+#> # A tibble: 24 × 5
+#>   samps measurement abs_260 abs_280 ratio_260_280
+#>   <chr>       <int>   <dbl>   <dbl>         <dbl>
+#> 1 6 1             1    3.39    3.13          1.08
+#> 2 6 2             2    3.49    3.24          1.08
+#> 3 7 1             3    2.54    2.37          1.08
+#> # ...
 ```
 
-### Working with Example Data
+![Absorbance spectra of the 24 measurements in the bundled example export](man/figures/example-spectra.png)
 
-```r
-# Load example dataset
-data(ds1)
+## Functions
 
-# Perform analysis on example data
-results <- parse_waves(ds1)
-```
+| Function | What it does |
+|---|---|
+| `read_nanodrop()` | Read one export. Optional wavelength bounds, and optional handling of re-measured samples marked by a name suffix (`remeasure_suffix`). |
+| `read_nanodrop_dir()` | Read every export in a folder and stack them. |
+| `parse_waves()` | Absorbance at chosen wavelengths per measurement, plus pairwise differences or ratios. |
 
-### Sample Visualizations
+The package includes an example export
+(`system.file("extdata", "nanodrop_example.tsv", package = "nanodRop")`) and
+two example datasets, `ds` and `ds1`.
 
-#### Absorbance Spectra
+## Scope
 
-![Absorbance spectrum from ds dataset showing typical UV-Vis absorption pattern](man/figures/absorbance_vs_wavelength_ds.png)
-
-*Figure 1: Typical absorbance spectrum from the `ds` example dataset, showing UV-Vis absorption across wavelengths.*
-
-![Absorbance spectrum from ds1 dataset](man/figures/absorbance_vs_wavelength_ds1.png)
-
-*Figure 2: Absorbance spectrum from the `ds1` example dataset, demonstrating spectral data visualization.*
-
-#### Peak-to-Valley Analysis
-
-![Parsed wave differences from ds dataset showing peak-valley calculations](man/figures/parsed_waves_ds.png)
-
-*Figure 3: Peak-to-valley differences calculated for selected wavelength pairs in the `ds` dataset.*
-
-![Parsed wave differences from ds1 dataset](man/figures/parsed_waves_ds1.png)
-
-*Figure 4: Peak-to-valley analysis results for the `ds1` dataset, highlighting spectral features.*
-
-## API Reference
-
-### Core Functions
-
-- [`read_nanodrop()`](man/read_nanodrop.Rd) - Import and process NanoDrop TSV files
-- [`parse_waves()`](man/parse_waves.Rd) - Calculate peak-to-valley differences for spectral analysis
-
-### Datasets
-
-- [`ds`](man/ds.Rd) - Example spectral dataset for testing and demonstration
-
-## Contributing
-
-We welcome contributions to nanodRop! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
-
-- Reporting bugs and issues
-- Suggesting new features
-- Submitting pull requests
-- Code style guidelines
-
-### Development Setup
-
-1. Fork the repository
-2. Clone your fork: `git clone https://github.com/yourusername/nanodRop.git`
-3. Install development dependencies: `devtools::install_dev_deps()`
-4. Make your changes
-5. Run tests: `devtools::test()`
-6. Submit a pull request
-
-## License
-
-This package is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This package reads the **UV-Vis spectral** export from the NanoDrop One. It
+has not been tested with other NanoDrop models or with the nucleic acid and
+protein report exports. If you have one of those files and it doesn't parse,
+please [open an issue](https://github.com/beabock/nanodRop/issues) with a
+sample file.
 
 ## Citation
 
-If you use nanodRop in your research, please cite:
-
-```bibtex
-@misc{bock2024nanodrop,
-  title={nanodRop: Tools for Importing and Processing NanoDrop One Spectral Data},
-  author={Bock, Beatrice},
-  year={2024},
-  doi={10.5281/zenodo.12519996}
-}
+```r
+citation("nanodRop")
 ```
-
-For more citation details, see `citation("nanodRop")`.

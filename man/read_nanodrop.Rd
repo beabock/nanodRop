@@ -2,22 +2,63 @@
 % Please edit documentation in R/read_nanodrop.R
 \name{read_nanodrop}
 \alias{read_nanodrop}
-\title{Read and Process Nanodrop Data}
+\title{Read a NanoDrop One spectral export}
 \usage{
-read_nanodrop(filepath, max_wv = "850.0", min_wv = "190.0", error = "e")
+read_nanodrop(
+  filepath,
+  min_wv = NULL,
+  max_wv = NULL,
+  remeasure_suffix = NULL,
+  error
+)
 }
 \arguments{
-\item{filepath}{Path to the input TSV file.}
+\item{filepath}{Path to the exported \code{.tsv} file.}
 
-\item{max_wv}{Maximum wavelength value as a string. Default is "850.0".}
+\item{min_wv, max_wv}{Optional numeric wavelength bounds (inclusive). \code{NULL}
+(the default) keeps the full measured range.}
 
-\item{min_wv}{Minimum wavelength value as a string. Default is "190.0".}
+\item{remeasure_suffix}{Optional suffix that marks a re-measurement, e.g.
+\code{"e"}. When set, a sample named \code{"A"} followed by one named \code{"Ae"} is
+treated as a replacement: the \code{"A"} measurements are dropped and \code{"Ae"} is
+renamed to \code{"A"}. Names ending in the suffix with no matching original
+(e.g. \code{"Rinse"} with no \code{"Rins"}) are left alone. \code{NULL} (the default)
+disables this.}
 
-\item{error}{Error character to check in the "samps" column. Default is "e".}
+\item{error}{Deprecated; use \code{remeasure_suffix}.}
 }
 \value{
-A data.table with processed data.
+A \code{\link[data.table:data.table]{data.table::data.table()}} with columns:
+\describe{
+\item{samps}{Sample name (character).}
+\item{waves}{Wavelength in nm (numeric).}
+\item{abs}{Absorbance (numeric).}
+\item{measurement}{Position of the measurement block in the file (integer).}
+\item{timestamp}{Timestamp line as written by the instrument (character).}
+}
 }
 \description{
-Read and Process Nanodrop Data
+Parses a UV-Vis spectral \code{.tsv} file exported by a NanoDrop One into a long
+table with one row per sample measurement and wavelength.
+}
+\details{
+An export consists of one block per measurement: a sample name line, a
+timestamp line, a \code{Wavelength (nm)} header line, optional \verb{//} calibration
+lines, and then tab-separated wavelength/absorbance pairs. Blocks are located
+by their header line, so the parser does not depend on the date format or
+locale of the instrument.
+
+Every block becomes its own \code{measurement}, so measuring the same sample name
+twice yields two measurements rather than silently merging them.
+}
+\examples{
+path <- system.file("extdata", "nanodrop_example.tsv", package = "nanodRop")
+spectra <- read_nanodrop(path)
+head(spectra)
+
+# Restrict to the visible range
+visible <- read_nanodrop(path, min_wv = 400, max_wv = 700)
+}
+\seealso{
+\code{\link[=read_nanodrop_dir]{read_nanodrop_dir()}} to read every export in a folder.
 }

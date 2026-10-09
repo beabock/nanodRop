@@ -1,133 +1,98 @@
-test_that("read_nanodrop handles basic functionality", {
-  # Use the example data file
-  filepath <- system.file("extdata", "nanodrop_example.tsv", package = "nanodRop")
+example_path <- function() system.file("extdata", "nanodrop_example.tsv", package = "nanodRop")
 
-  # Test with default parameters
-  result <- read_nanodrop(filepath)
+# One measurement block in NanoDrop export layout.
+block <- function(name, stamp = "5/14/2024 5:04 PM", waves = c(190, 190.5, 850),
+                  abs = seq_along(waves) / 10) {
+  c(name, stamp, "Wavelength (nm)\t10mm Absorbance",
+    "//WLCalib: Shift \t0.22333\t", "//QSpecEnd: ",
+    paste0(format(waves, nsmall = 1), "\t", abs))
+}
 
-  # Check that result is a data.table
-  expect_s3_class(result, "data.table")
+write_export <- function(...) {
+  path <- tempfile(fileext = ".tsv")
+  writeLines(c(...), path)
+  path
+}
 
-  # Check column names
-  expect_named(result, c("samps", "waves", "abs"))
-
-  # Check data types
-  expect_type(result$samps, "character")
-  expect_type(result$waves, "double")
-  expect_type(result$abs, "double")
-
-  # Check that waves are numeric and within expected range
-  expect_true(all(result$waves >= 190 & result$waves <= 850))
-
-  # Check that abs values are numeric
-  expect_true(all(is.numeric(result$abs)))
-
-  # Check that samps are not empty
-  expect_true(all(nchar(result$samps) > 0))
-})
-
-test_that("read_nanodrop handles custom wavelength ranges", {
-  filepath <- system.file("extdata", "nanodrop_example.tsv", package = "nanodRop")
-
-  # Test with custom min and max wavelengths
-  result <- read_nanodrop(filepath, min_wv = "200.0", max_wv = "800.0")
+test_that("reads the bundled export", {
+  result <- read_nanodrop(example_path())
 
   expect_s3_class(result, "data.table")
-  expect_true(all(result$waves >= 200 & result$waves <= 800))
+  expect_named(result, c("samps", "waves", "abs", "measurement", "timestamp"))
+  expect_equal(nrow(result), 24 * 1321)
+  expect_equal(range(result$waves), c(190, 850))
+  expect_false(anyNA(result$abs))
+  expect_equal(result[, .N, by = measurement]$N, rep(1321L, 24))
+  expect_equal(result$timestamp[1], "5/14/2024 5:04 PM")
 })
 
-test_that("read_nanodrop handles error checking", {
-  # Create a mock file with missing wavelengths
-  temp_file <- tempfile(fileext = ".tsv")
-  writeLines("190.0\t0.5\n195.0\t0.6\n200.0\t0.7", temp_file)
-
-  expect_error(read_nanodrop(temp_file), "Specified min_wv or max_wv not found")
-
-  unlink(temp_file)
+test_that("matches the bundled ds dataset", {
+  result <- read_nanodrop(example_path())
+  expect_equal(as.data.frame(result)[c("samps", "waves", "abs")], ds, ignore_attr = TRUE)
 })
 
-test_that("read_nanodrop handles mismatched start and end rows", {
-  # This test might be hard to trigger without specific data, but we can test the error message
-  # For now, assume the function handles it correctly as per code
-  filepath <- system.file("extdata", "nanodrop_example.tsv", package = "nanodRop")
-
-  # Test with parameters that might cause issues (though unlikely with real data)
-  # This is more of a placeholder for edge case testing
-  result <- read_nanodrop(filepath)
-  expect_s3_class(result, "data.table")
+test_that("skips calibration lines and parses values", {
+  result <- read_nanodrop(write_export(block("A", abs = c(0.5, -0.25, 1e-3))))
+  expect_equal(result$waves, c(190, 190.5, 850))
+  expect_equal(result$abs, c(0.5, -0.25, 1e-3))
 })
 
-test_that("read_nanodrop processes error samples correctly", {
-  # Test the error sample handling logic
-  # Create mock data that includes error samples
-  temp_file <- tempfile(fileext = ".tsv")
-  mock_data <- c(
-    "Sample1",
-    "5/14/2024 5:04 PM",
-    "Wavelength (nm) 10mm Absorbance",
-    "190.0\t0.5",
-    "195.0\t0.6",
-    "850.0\t0.8",
-    "Sample2e",  # Error sample
-    "5/14/2024 5:05 PM",
-    "Wavelength (nm) 10mm Absorbance",
-    "190.0\t0.7",
-    "195.0\t0.9",
-    "850.0\t1.0"
-  )
-  writeLines(mock_data, temp_file)
-
-  # Note: This test might need adjustment based on actual file format
-  # For now, test that function doesn't crash
-  expect_error(read_nanodrop(temp_file), NA)  # Expect no error
-
-  unlink(temp_file)
+test_that("sample names ending in 'e' are kept as written", {
+  result <- read_nanodrop(write_export(block("Rinse"), block("Blue")))
+  expect_equal(unique(result$samps), c("Rinse", "Blue"))
 })
 
-test_that("read_nanodrop validates input types", {
-  filepath <- system.file("extdata", "nanodrop_example.tsv", package = "nanodRop")
-
-  # Test with invalid filepath
-  expect_error(read_nanodrop("nonexistent_file.tsv"))
-
-  # Test with non-string min_wv and max_wv (though function accepts strings)
-  # Function expects strings, so test with numbers
-  expect_error(read_nanodrop(filepath, min_wv = 190, max_wv = 850))
+test_that("repeated sample names stay separate measurements", {
+  result <- read_nanodrop(write_export(block("A"), block("A")))
+  expect_equal(nrow(result), 6)
+  expect_equal(unique(result$measurement), 1:2)
 })
 
-test_that("read_nanodrop handles edge case with single sample", {
-  # Test with minimal data
-  temp_file <- tempfile(fileext = ".tsv")
-  mock_data <- c(
-    "Sample1",
-    "5/14/2024 5:04 PM",
-    "Wavelength (nm) 10mm Absorbance",
-    "190.0\t0.5",
-    "191.0\t0.6",
-    "192.0\t0.7",
-    "193.0\t0.8",
-    "194.0\t0.9",
-    "195.0\t1.0",
-    "850.0\t0.1"
-  )
-  writeLines(mock_data, temp_file)
-
-  result <- read_nanodrop(temp_file)
-  expect_s3_class(result, "data.table")
-  expect_equal(nrow(result), 7)  # Should have 7 wavelength points
-
-  unlink(temp_file)
+test_that("does not depend on the timestamp format", {
+  result <- read_nanodrop(write_export(block("A", "14/05/2024 17:04"), block("B", "2024-05-14 17:05:00")))
+  expect_equal(unique(result$samps), c("A", "B"))
+  expect_equal(unique(result$timestamp), c("14/05/2024 17:04", "2024-05-14 17:05:00"))
 })
 
-test_that("read_nanodrop handles multiple samples", {
-  # Use the actual data file which should have multiple samples
-  filepath <- system.file("extdata", "nanodrop_example.tsv", package = "nanodRop")
-  result <- read_nanodrop(filepath)
+test_that("wavelength bounds accept numbers and strings", {
+  result <- read_nanodrop(example_path(), min_wv = 200, max_wv = 800)
+  expect_equal(range(result$waves), c(200, 800))
+  expect_equal(read_nanodrop(example_path(), min_wv = "200.0", max_wv = "800.0"), result)
+  expect_error(read_nanodrop(example_path(), min_wv = 800, max_wv = 200), "less than or equal")
+  expect_error(read_nanodrop(example_path(), min_wv = "abc"), "single number")
+})
 
-  # Check that we have multiple samples
-  expect_true(length(unique(result$samps)) > 1)
+test_that("remeasure_suffix replaces originals only when they exist", {
+  path <- write_export(block("A", abs = c(1, 1, 1)), block("Rinse"), block("Ae", abs = c(2, 2, 2)))
 
-  # Check that all samples have the same wavelengths
-  wavelengths_per_sample <- result[, .N, by = samps]
-  expect_true(all(wavelengths_per_sample$N == wavelengths_per_sample$N[1]))
+  result <- read_nanodrop(path, remeasure_suffix = "e")
+  expect_equal(unique(result$samps), c("Rinse", "A"))
+  expect_equal(result[samps == "A"]$abs, c(2, 2, 2))
+
+  expect_equal(unique(read_nanodrop(path)$samps), c("A", "Rinse", "Ae"))
+})
+
+test_that("deprecated `error` argument still works with a warning", {
+  path <- write_export(block("A"), block("Ae"))
+  expect_warning(result <- read_nanodrop(path, error = "e"), "deprecated")
+  expect_equal(unique(result$samps), "A")
+})
+
+test_that("reports unusable input clearly", {
+  expect_error(read_nanodrop("nonexistent_file.tsv"), "File not found")
+  expect_error(read_nanodrop(write_export("190.0\t0.5", "195.0\t0.6")), "No spectra found")
+})
+
+test_that("read_nanodrop_dir stacks files with a file column", {
+  dir <- tempfile()
+  dir.create(dir)
+  writeLines(block("A"), file.path(dir, "one.tsv"))
+  writeLines(block("B"), file.path(dir, "two.tsv"))
+  writeLines("not an export", file.path(dir, "notes.txt"))
+
+  result <- read_nanodrop_dir(dir, min_wv = 190.5)
+  expect_named(result, c("file", "samps", "waves", "abs", "measurement", "timestamp"))
+  expect_equal(unique(result$file), c("one.tsv", "two.tsv"))
+  expect_equal(nrow(result), 4)
+  expect_error(read_nanodrop_dir(dir, pattern = "\\.csv$"), "No files")
 })

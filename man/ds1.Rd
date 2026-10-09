@@ -3,23 +3,24 @@
 \docType{data}
 \name{ds1}
 \alias{ds1}
-\title{Example spectral dataset 2}
+\title{Second example set of NanoDrop spectra}
 \format{
-A data frame with 31704 rows and 4 variables:
+A data.table with 14,531 rows and 4 variables:
 \describe{
-\item{samps}{Sample identifiers (character)}
-\item{waves}{Wavelengths (numeric)}
-\item{abs}{Absorbance values (numeric)}
-\item{n}{Sample number (integer)}
+\item{samps}{Sample name (character).}
+\item{waves}{Wavelength in nm (numeric).}
+\item{abs}{Absorbance (numeric).}
+\item{n}{Session label; \code{"sn1"} for every row (character).}
 }
 }
 \source{
-Generated data for example purposes
+NanoDrop One measurements by the package author.
 }
 \usage{
 ds1
 }
 \description{
-A dataset containing example spectral data for analysis.
+Spectra of 11 samples from a separate NanoDrop session, 1,321 wavelengths
+each.
 }
 \keyword{datasets}
